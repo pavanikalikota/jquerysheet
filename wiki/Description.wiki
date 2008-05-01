@@ -1,0 +1,13 @@
+= Introduction =
+jQuery.Sheet gives MS Excel style sheet editing abilities with calculations. Ported from TrimPath Spreadsheet 1.0.14. Still in initial building phase. It does work well and I invite you to download, unpack, and try it out.
+
+jQuery.Sheet is html Table driven, so it's easy to build an application that can save the information - This is something a lot of JavaScript Spreadsheets lack. The code is still being converted, and there are a few functions that, although they are powerful, need to be simplified using jQuery. At this time jQuery.Sheet doesn't support external selectors for initialization but that will change very soon.
+
+The reason that I've posted this on jQuery's website starting with .01 Beta is that the project more or less has been completed at TrimPath at version 1.0.14, and (as far as I know) isn't under development. I simply want to port over, expand upon, and create a more functional product for everyone to use. Including the company that I work for.
+
+jQuery.Sheet is initialized with the following:
+$(document).ready(function() {
+$().Sheet();
+});
+
+Feedback is always welcome...
