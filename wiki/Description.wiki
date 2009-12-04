@@ -1,13 +1,14 @@
+#labels Featured,Phase-Requirements
 = Introduction =
-jQuery.Sheet gives MS Excel style sheet editing abilities with calculations. Ported from TrimPath Spreadsheet 1.0.14. Still in initial building phase. It does work well and I invite you to download, unpack, and try it out.
 
-jQuery.Sheet is html Table driven, so it's easy to build an application that can save the information - This is something a lot of JavaScript Spreadsheets lack. The code is still being converted, and there are a few functions that, although they are powerful, need to be simplified using jQuery. At this time jQuery.Sheet doesn't support external selectors for initialization but that will change very soon.
+What is jQuery.sheet?
+jQuery.sheet gives you all sorts of possibilities when it comes to giving your web application a spreadsheet style interface with MS Excel style calculations.
 
-The reason that I've posted this on jQuery's website starting with .01 Beta is that the project more or less has been completed at TrimPath at version 1.0.14, and (as far as I know) isn't under development. I simply want to port over, expand upon, and create a more functional product for everyone to use. Including the company that I work for.
+jQuery.sheet addresses the web-based spreadsheet or "websheet" in a different, simple, approach - using html, you simply load the sheet from a url, and you save it to a url... Simple.  Or write your own approch. jQuery.sheet manages the sheet creation, viewing, and editing processes, you simply build your application around it.
 
-jQuery.Sheet is initialized with the following:
-$(document).ready(function() {
-$().Sheet();
-});
 
-Feedback is always welcome...
+jQuery.sheet is also theme-able, using jQuery UI ThemeRoller, so you make the spreadsheet look like you want.For a complete list of all the MS Excel style functions that jQuery.sheet supports, take a look at the Demo, which is the documentation.
+
+Why did I start jQuery.sheet?  I like a challenge, I like to learn, I like to contribute, and I saw where other attempts at the same thing, although being nice, could be improved.  And with the web basically migrating in it's entirety over to jQuery, I wanted to put some fun back into my javascripting.
+
+<a href="http://jqueryplugins.weebly.com/uploads/3/1/3/8/313814/jquery.sheet.html">Click Here for a Demo</a>
