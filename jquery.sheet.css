@@ -21,7 +21,7 @@
 	position: relative;
 }
 
-.rootVoices, #jSheetMenu, #jSheetControls, #jSheetControls table
+#jSheetMenu, #jSheetControls, #jSheetControls table
 {
 	padding: 0px ! important;
 	background-color: transparent ! important;
@@ -32,6 +32,10 @@
 #jSheetMenu *
 {
 	color: inherit;
+}
+.rootVoices
+{
+	width: 50px ! important;
 }
 .rootVoice, .rootVoice .selected
 {
