@@ -1,6 +1,6 @@
 /*
 jQuery.sheet() Spreadsheet with Calculations Plugin
-Version: 1.01
+Version: 1
 http://code.google.com/p/jquerysheet/
 		
 Copyright (C) 2010 Robert Plummer
@@ -35,20 +35,8 @@ http://www.gnu.org/licenses/
 				</document>
 			</documents>
 		json structure:
-			[//documents
-				{ //document
-					metadata: {
-						columns: Column_Count,
-						rows: Row_Count,
-						title: ''
-					},
-					data: {
-						r{Row_Index}: { //repeats
-							c{Column_Index}: '' //repeats
-						}
-					}
-				},
-				{ //document
+			var documents = [
+				document: { //repeats
 					metadata: {
 						columns: Column_Count,
 						rows: Row_Count,
@@ -152,48 +140,39 @@ jQuery.fn.extend({
 });
 
 var jS = jQuery.sheet = {
-	version: '1.01',
+	version: '1',
 	i: 0,
 	sheetCount: 0,
 	s: {},//s = settings object, used for shorthand, populated from jQuery.sheet
 	obj: {//obj = object references
-		parent: 			function() { return jQuery(jS.s.parent); },
-		ui:					function() { return jQuery('#' + jS.id.ui); },
-		sheet: 				function() { return jQuery('#' + jS.id.sheet + jS.i); },
-		sheetAll: 			function() { return jQuery('.' + jS.cl.sheet); },
-		barTop: 			function() { return jQuery('#' + jS.id.barTop + jS.i); },
-		barTopAll:			function() { return jQuery('.' + jS.cl.barTop); },
-		barTopParent: 		function() { return jQuery('#' + jS.id.barTopParent + jS.i); },
-		barTopParentAll:	function() { return jQuery('.' + jS.cl.barTopParent); },
-		barLeft: 			function() { return jQuery('#' + jS.id.barLeft + jS.i); },
-		barLeftAll:			function() { return jQuery('.' + jS.cl.barLeft); },
-		barLeftParent: 		function() { return jQuery('#' + jS.id.barLeftParent + jS.i); },
-		barLeftParentAll:	function() { return jQuery('.' + jS.cl.barLeftParent); },
-		barCorner:			function() { return jQuery('#' + jS.id.barCorner + jS.i); },
-		barCornerAll:		function() { return jQuery('.' + jS.cl.barCorner); },
-		barCornerParent:	function() { return jQuery('#' + jS.id.barCornerParent + jS.i); },
-		barCornerParentAll: function() { return jQuery('.' + jS.cl.barCornerParent); },
-		barSelected:		function() { return jQuery('.' + jS.cl.barSelected); },
-		cell: 				function() { return jQuery('.' + jS.cl.cell); },
-		controls:			function() { return jQuery('#' + jS.id.controls); },
-		formula: 			function() { return jQuery('#' + jS.id.formula); },
-		label: 				function() { return jQuery('#' + jS.id.label); },
-		fx:					function() { return jQuery('#' + jS.id.fx); },
-		pane: 				function() { return jQuery('#' + jS.id.pane + jS.i); },
-		paneAll:			function() { return jQuery('.' + jS.cl.pane); },
-		log: 				function() { return jQuery('#' + jS.id.log); },
-		menu:				function() { return jQuery('#' + jS.id.menu); },
-		uiDefault:			function() { return jQuery('.' + jS.cl.uiDefault); },
-		uiActive:			function() { return jQuery('.' + jS.cl.uiActive); },
-		uiBase:				function() { return jQuery('.' + jS.cl.uiBase); },
-		uiCell:				function() { return jQuery('.' + jS.cl.uiCell); },
-		toggle:				function() { return jQuery('.' + jS.cl.toggle); },
-		tableBody: 			function() { return document.getElementById(jS.id.sheet + jS.i); },
-		tableControl:		function() { return jQuery('#' + jS.id.tableControl + jS.i); },
-		tableControlAll:	function() { return jQuery('.' + jS.cl.tableControl); },
-		tab:				function() { return jQuery('#' + jS.id.tab + jS.i); },
-		tabAll:				function() { return jQuery('.' + jS.cl.tab); },
-		tabContainer:		function() { return jQuery('#' + jS.id.tabContainer); }
+		parent: 		function() { return jQuery(jS.s.parent); },
+		ui:				function() { return jQuery('#' + jS.id.ui); },
+		sheet: 			function() { return jQuery('#' + jS.id.sheet + jS.i); },
+		sheetAll: 		function() { return jQuery('.' + jS.cl.sheet); },
+		barTop: 		function() { return jQuery('#' + jS.id.barTop + jS.i); },
+		barTopParent: 	function() { return jQuery('#' + jS.id.barTopParent + jS.i); },
+		barLeft: 		function() { return jQuery('#' + jS.id.barLeft + jS.i); },
+		barLeftParent: 	function() { return jQuery('#' + jS.id.barLeftParent + jS.i); },
+		barCorner:		function() { return jQuery('#' + jS.id.barCorner + jS.i); },
+		barCornerParent:function() { return jQuery('#' + jS.id.barCornerParent + jS.i); },
+		barSelected:	function() { return jQuery('.' + jS.cl.barSelected); },
+		cell: 			function() { return jQuery('.' + jS.cl.cell); },
+		controls:		function() { return jQuery('#' + jS.id.controls); },
+		formula: 		function() { return jQuery('#' + jS.id.formula); },
+		label: 			function() { return jQuery('#' + jS.id.label); },
+		fx:				function() { return jQuery('#' + jS.id.fx); },
+		pane: 			function() { return jQuery('#' + jS.id.pane + jS.i); },
+		log: 			function() { return jQuery('#' + jS.id.log); },
+		menu:			function() { return jQuery('#' + jS.id.menu); },
+		uiDefault:		function() { return jQuery('.' + jS.cl.uiDefault); },
+		uiActive:		function() { return jQuery('.' + jS.cl.uiActive); },
+		uiBase:			function() { return jQuery('.' + jS.cl.uiBase); },
+		uiCell:			function() { return jQuery('.' + jS.cl.uiCell); },
+		toggle:			function() { return jQuery('.' + jS.cl.toggle); },
+		tableBody: 		function() { return document.getElementById(jS.id.sheet + jS.i); },
+		tableControl:	function() { return jQuery('#' + jS.id.tableControl + jS.i); },
+		tab:			function() { return jQuery('#' + jS.id.tab + jS.i); },
+		tabContainer:	function() { return jQuery('#' + jS.id.tabContainer); }
 	},
 	id: {//id = id's references
 		sheet: 			'jSheet',//This con probably be just about any value as long as it's not a duplicated id
@@ -541,16 +520,11 @@ var jS = jQuery.sheet = {
 			
 			firstRowTr.appendTo(firstRow);
 			
-			var tabParent = jQuery('<div id="' + jS.id.tabContainer + '">' + 
-							(jS.s.editable ? '<span class="ui-widget-header ui-corner-bottom" title="Add a spreadsheet" i="-1">+</span>' : '<span />') + 
-						'</div>')
-					.mousedown(jS.evt.tabOnMouseDown);
-
 			jS.obj.parent()
 				.html('')
 				.append(header) //add controls header
 				.append('<div id="' + jS.id.ui + '" class="' + jS.id.ui + '">') //add spreadsheet control
-				.after(tabParent);
+				.after('<div id="' + jS.id.tabContainer + '">' + (jS.s.editable ? '<span class="ui-widget-header ui-corner-bottom" title="Add a spreadsheet" onclick="jS.addSheet();">+</span>' : '<span />') + '</div>'); //add tab control
 		},
 		sheet: function(size) {
 			if (!size) {
@@ -918,8 +892,9 @@ var jS = jQuery.sheet = {
 					jS.obj.formula().val(v + jS.getTdRange());
 				});
 			} else {
-				return jS.cellSetActiveMulti(e);
-			}			
+				jS.cellSetActiveMulti(e);
+			}
+			//return false;
 		},
 		cellOnClickLocked: function(e) {
 			if (!isNaN(e.target.cellIndex)) {
@@ -950,22 +925,9 @@ var jS = jQuery.sheet = {
 			} else { //inline edit, 2nd click
 				jS.cellLast.isEdit = jS.isSheetEdit = true;
 				jS.cellTextArea(td, false, true);
-				jS.themeRoller.cell(td);
 				jS.log('click, textarea over table activated');
 			}
 			jS.followMe(td);
-		},
-		tabOnMouseDown: function(e) {
-			var i = jQuery(e.target).attr('i');
-			
-			if (i != '-1' && i != jS.i) {
-				jS.setActiveSheet(jQuery('#' + jS.id.tableControl + i), i); jS.calc(i);
-			} else if (i != '-1' && jS.i == i) {
-				jS.sheetTab();
-			} else {
-				jS.addSheet();
-			}
-			return false;
 		},
 		resizeBar: function(e, o) {
 			//Resize Column & Row & Prototype functions are private under class jSheet		
@@ -1210,29 +1172,6 @@ var jS = jQuery.sheet = {
 			});
 		});
 	},
-	setControlIds: function() {
-		var resetIds = function(o, id) {
-			o.each(function(i) {
-				jQuery(this).attr('id', id + i);
-			});
-		}
-		
-		resetIds(jS.obj.sheetAll().each(function() {
-			jS.setTdIds(jQuery(this));
-		}), jS.id.sheet);
-		
-		resetIds(jS.obj.barTopAll(), jS.id.barTop);
-		resetIds(jS.obj.barTopParentAll(), jS.id.barTopParent);
-		resetIds(jS.obj.barLeftAll(), jS.id.barLeft);
-		resetIds(jS.obj.barLeftParentAll(), jS.id.barLeftParent);
-		resetIds(jS.obj.barCornerAll(), jS.id.barCorner);
-		resetIds(jS.obj.barCornerParentAll(), jS.id.barCornerParent);
-		resetIds(jS.obj.tableControlAll(), jS.id.tableControl);
-		resetIds(jS.obj.paneAll(), jS.id.pane);
-		resetIds(jS.obj.tabAll().each(function(j) {
-			jQuery(this).attr('i', j);
-		}), jS.id.tab);
-	},
 	columnResizer: {
 		xyDimension: 0,
 		getIndex: function(td) {
@@ -1344,12 +1283,10 @@ var jS = jQuery.sheet = {
 		}
 	},
 	addTab: function() {
-		jQuery('<span class="ui-corner-bottom ui-widget-header">' + 
-				'<a class="' + jS.cl.tab + '" id="' + jS.id.tab + jS.i + '" i="' + jS.i + '">' + jS.sheetTab(true) + '</a>' + 
-			'</span>')
-				.insertBefore(
-					jS.obj.tabContainer().find('span:last')
-				);
+		jQuery('<span class="ui-corner-bottom ui-widget-header"><a class="' + jS.cl.tab + '" id="' + jS.id.tab + jS.i + '" OnDblClick="jS.sheetTab(); return false;" onclick="jS.setActiveSheet(jQuery(\'#' + jS.id.tableControl + jS.i + '\'), ' + jS.i + '); jS.calc(' + jS.i + '); return false;">' + jS.sheetTab(true) + '</a></span>')
+			.insertBefore(
+				jS.obj.tabContainer().find('span:last')
+			);
 	},
 	sheetDecorate: function(o) {	
 		jS.formatSheet(o);
@@ -1365,11 +1302,15 @@ var jS = jQuery.sheet = {
 			o.remove('colgroup');
 			var colgroup = jQuery('<colgroup />');
 			o.find('tr:first').find('td').each(function() {
-				var w = jQuery(this).outerWidth() + (jS.attrH.boxModelCorrection() * 2);
+				//var w = jQuery(this).width();
+				//jQuery(this)
+				//	.width(w)
+				//	.css('width', w)
+				//	.attr('width', w);
 				jQuery('<col />')
-					.width(w)
-					.css('width', (w) + 'px')
-					.attr('width', (w) + 'px')
+					.width(jS.s.newColumnWidth)
+					.css('width', jS.s.newColumnWidth + 'px')
+					.attr('width', jS.s.newColumnWidth + 'px')
 					.appendTo(colgroup);
 			});
 			o.find('tr').each(function() {
@@ -1613,7 +1554,7 @@ var jS = jQuery.sheet = {
 				
 				jS.obj.formula().attr('disabled', 'true');
 				
-				var textArea = jQuery('<textarea id="tempText" class="clickable" />');
+				var textArea = jQuery('<textarea id="tempText" />');
 				var h = jS.attrH.height(td);
 				
 				//There was an error in some browsers where they would mess this up.
@@ -1667,16 +1608,6 @@ var jS = jQuery.sheet = {
 				jS.setActiveSheet(newSheetControl, jS.sheetCount + 1);
 			}, true);
 		}
-	},
-	deleteSheet: function() {
-		jS.obj.tableControl().remove();
-		jS.obj.tabContainer().children().eq(jS.i).remove();
-		jS.i = 0;
-		jS.sheetCount--;
-		
-		jS.setControlIds();
-		
-		jS.setActiveSheet(jS.obj.tableControl(), jS.i);
 	},
 	deleteRow: function() {
 		var v = confirm("Are you sure that you want to delete that row? Fomulas will not be updated.");
@@ -2040,57 +1971,48 @@ var jS = jQuery.sheet = {
 			
 			return table;
 		},
-		json: function(data, makeEval) {
-			sheet = (makeEval == true ? eval('(' + data + ')') : data);
+		json: function(data) {
+			jS.i = jS.sheetCount + 1;
+			sheet = eval('(' + data + ')');
+			size_c = sheet["metadata"]["columns"] * 1 + 5;
+			size_r = sheet["metadata"]["rows"] * 1 + 1;
+			title = sheet["metadata"]["title"];
+			title = (title ? title : "");
 			
-			var tables = jQuery('<div />');
+			var table = jQuery("<table id='" + jS.id.sheet + jS.i + "' class='" + jS.cl.sheet + "' title='" + title + "' />");
 			
-			for (var i = 0; i < sheet.length; i++) {
-				jS.i = jS.sheetCount + 1;
-				size_c = parseInt(sheet[i].metadata.columns) - 1;
-				size_r = parseInt(sheet[i].metadata.rows) - 1;
-				title = sheet[i].metadata.title;
-				title = (title ? title : "Sreadsheet " + jS.i);
-			
-				var table = jQuery("<table id='" + jS.id.sheet + jS.i + "' class='" + jS.cl.sheet + "' title='" + title + "' />");
+			var cur_row;
+			for(var x = 1; x <= size_r; x++)
+			{
+				cur_row = jQuery('<tr height="' + jS.s.colMargin + 'px" />').appendTo(table);
 				
-				for (var x = 0; x <= size_r; x++) {				
-					var cur_row = jQuery('<tr />').appendTo(table);
+				for(var y = 1; y <= size_c; y++)
+				{
+					cur_row.append('<td id="' + 'table' + jS.i + '_' + 'cell_c' + y + '_r' + x + '" />');
+				}
+			}
+			
+			for (row in sheet["data"])
+			{
+				for (column in sheet["data"][row])
+				{
+					cur_val = sheet["data"][row][column];
+					cur_column = table.find('table' + jS.i + '_' + 'cell_' + column + '_r' + row).text(cur_val);
 					
-					for(var y = 0; y <= size_c; y++) {	
-						var cur_val = sheet[i].data["r" + (y + 1)]["c" + (x + 1)];
-					
-						var cur_td = jQuery('<td id="' + 'table' + jS.i + '_' + 'cell_c' + y + '_r' + x + '" />');
-						try {
-							if (cur_val.charAt(0) == '=')
-							{
-								cur_td.attr("formula", cur_val);
-							} else {
-								cur_td.html(cur_val);
-							}
-						} catch (e) {}
-					
-						cur_row.append(cur_td)
-
+					if (cur_val.charAt(0) == '=')
+					{
+						cur_column.attr("formula", cur_val);
 					}
 				}
-				
-				tables.append(table);
 			}
-			return tables.children();
+			
+			return table;
 		}
 	},
 	exportSheet: {
-		xml: function (skipCData) {
+		xml: function () {
 			var sheetClone = jS.sheetDecorateRemove(true);			
 			var result = "";
-			
-			var cdata = ['<![CDATA[',']]>'];
-			
-			if (skipCData) {
-				cdata = ['',''];
-			}
-			
 			jQuery(sheetClone).each(function() {
 				var x = '';
 				var title = jQuery(this).attr('title');
@@ -2125,7 +2047,7 @@ var jS = jQuery.sheet = {
 								txt = formula;
 							}
 							
-							x += '<c' + cur_column + '>' + cdata[0] + txt + cdata[1] + '</c' + cur_column + '>';
+							x += '<c'+cur_column+'><![CDATA['+txt+']]></c'+cur_column+'>';
 						}
 					});
 					
@@ -2136,8 +2058,8 @@ var jS = jQuery.sheet = {
 				
 				result += '<document>' + 
 							'<metadata>' + 
-								'<columns>' + (parseInt(max_column) + 1) + '</columns>' +  //length is 1 based, index is 0 based
-								'<rows>' + (parseInt(max_row) + 1) + '</rows>' +  //length is 1 based, index is 0 based
+								'<columns>' + max_column + '</columns>' + 
+								'<rows>' + max_row + '</rows>' + 
 								'<title>' + title + '</title>' + 
 							'</metadata>' + 
 							'<data>' + x + '</data>' + 
@@ -2151,10 +2073,12 @@ var jS = jQuery.sheet = {
 			var docs = []; //documents
 			
 			jQuery(sheetClone).each(function() {
-				var doc = { //document
+				var doc = {
 					metadata:{},
 					data:{}
 				};
+				
+				doc.metadata.title = jQuery(this).attr('title');
 				
 				var count = 0;
 				var cur_column = cur_row = '';
@@ -2194,9 +2118,8 @@ var jS = jQuery.sheet = {
 					cur_column = cur_row = '';
 				});
 				doc['metadata'] = {
-					"columns": parseInt(max_column) + 1, //length is 1 based, index is 0 based
-					"rows": parseInt(max_row) + 1, //length is 1 based, index is 0 based
-					"title": jQuery(this).attr('title')
+					"columns": max_column,
+					"rows": max_row
 				};
 				docs.push(doc); //append to documents
 			});
@@ -2274,7 +2197,10 @@ var jS = jQuery.sheet = {
 			}
 		}
 	},
-	cellSetActiveMulti: function(e) {	
+	cellSetActiveMulti: function(e) {
+		jS.themeRoller.clearCell();
+		jS.themeRoller.clearBar();
+		
 		var o = {
 			startRow: e.target.parentNode.rowIndex,
 			startColumn: e.target.cellIndex
@@ -2297,13 +2223,7 @@ var jS = jQuery.sheet = {
 					.unbind('mousemove')
 					.unbind('mouseup');
 			});
-			
-			//this helps with multi select so that when you are selecting cells you don't select the text within them
-			if (e.target != jS.cellLast.td && jQuery(e.target).hasClass('clickable') == false) {
-				jS.themeRoller.clearCell();
-				jS.themeRoller.clearBar();
-				return false;
-			}
+		return false;
 	},
 	cellSetActiveAll: function() {
 		if (jS.s.editable) {
