@@ -87,7 +87,6 @@ jQuery.fn.extend({
 				}
 			},
 			fnClose: 		function() {}, 					//fn, default clase function, more of a proof of concept
-			fnAfterCellEdit:	function() {},				//fn, fires just after someone edits a cell
 			joinedResizing: false, 							//bool, this joins the column/row with the resize bar
 			boxModelCorrection: 2, 							//int, attempts to correct the differences found in heights and widths of different browsers, if you mess with this, get ready for the must upsetting and delacate js ever
 			showErrors:		true							//bool, will make cells value an error if spreadsheet function isn't working correctly or is broken
@@ -781,20 +780,6 @@ var jS = jQuery.sheet = {
 				}
 				return true;
 			},
-			redo: function(e) {
-				if (e.ctrlKey && !jS.cellLast.isEdit) { 
-					jS.cellUndoable.undoOrRedo();
-					return false;
-				}
-				return true;
-			},
-			undo: function(e) {
-				if (e.ctrlKey && !jS.cellLast.isEdit) {
-					jS.cellUndoable.undoOrRedo(true);
-					return false;
-				}
-				return true;
-			},
 			formulaKeyDown: function(e) {
 				switch (e.keyCode) {
 					case key.ESCAPE: 	jS.evt.cellEditAbandon();
@@ -809,15 +794,6 @@ var jS = jQuery.sheet = {
 					case key.DOWN:		return jS.evt.cellClick(e.keyCode);
 						break;
 					case key.V:			return jS.evt.keyDownHandler.pasteOverCells(e);
-						break;
-					case key.Y:			return jS.evt.keyDownHandler.redo(e);
-						break;
-					case key.Z:			return jS.evt.keyDownHandler.undo(e);
-						break;
-					case key.CONTROL: //we need to filter these to keep cell state
-					case key.CAPS_LOCK:
-					case key.SHIFT:
-					case key.ALT:
 						break;
 					default: 			jS.cellLast.isEdit = true;
 				}
@@ -838,9 +814,6 @@ var jS = jQuery.sheet = {
 					
 					//Lets ensure that the cell being edited is actually active
 					if (td) { 
-						//first, let's make it undoable
-						jS.cellUndoable.add(td);
-						
 						//This should return either a val from textbox or formula, but if fails it tries once more from formula.
 						var v = jS.cellTextArea(td, true) + '';
 						var formula = td.attr('formula') + '';
@@ -862,12 +835,8 @@ var jS = jQuery.sheet = {
 						
 						jS.attrH.setHeight(jS.cellLast.row, 'cell');
 						
-						//Save the newest version of that cell
-						jS.cellUndoable.add(td);
-						
 						jS.obj.formula().focus().select();
 						jS.cellLast.isEdit = false;
-						jS.s.fnAfterCellEdit(jS.cellLast);
 					}
 					break;
 				default:
@@ -1686,22 +1655,15 @@ var jS = jQuery.sheet = {
 	},
 	cellStyleToggle: function(setClass, removeClass) {
 		//Lets check to remove any style classes
-		var uiCell = jS.obj.uiCell();
-		
-		jS.cellUndoable.add(uiCell);
-		
 		if (removeClass) {
-			uiCell.removeClass(removeClass);
+			jS.obj.uiCell().removeClass(removeClass);
 		}
 		//Now lets add some style
-		if (uiCell.hasClass(setClass)) {
-			uiCell.removeClass(setClass);
+		if (jS.obj.uiCell().hasClass(setClass)) {
+			jS.obj.uiCell().removeClass(setClass);
 		} else {
-			uiCell.addClass(setClass);
+			jS.obj.uiCell().addClass(setClass);
 		}
-		
-		jS.cellUndoable.add(uiCell);
-		
 		jS.obj.formula()
 			.focus()
 			.select();
@@ -2599,56 +2561,6 @@ var jS = jQuery.sheet = {
 		}
 		
 		formula.val(fV + v);
-	},
-	cellUndoable: {
-		undoOrRedo: function(undo) {
-			if (!undo && this.i > 0) {
-				this.i--;
-			} else if (undo && this.i < this.stack.length) {
-				this.i++;
-			}
-			
-			this.get().clone().each(function() {
-				var o = jQuery(this);
-				var id = o.attr('undoable');
-				if (id) {
-					var td = jQuery('#' + id);
-					
-					td.replaceWith(
-						o
-							.removeAttr('undoable')
-							.attr('id', id)
-					);
-				} else {
-					jS.log('Not available.');
-				}
-			});
-			
-			jS.themeRoller.clearCell(true);
-			jS.log(this.i);
-		},
-		get: function() { //gets the current cell
-			return jQuery(this.stack[this.i]);
-		},
-		add: function(tds) {
-			var oldTds = tds.clone().each(function() {
-				var o = jQuery(this);
-				var id = o.attr('id');
-				o.removeAttr('id'); //id can only exist in one location, on the sheet, so here we use the id as the attr 'undoable'
-				o.attr('undoable', id);
-			});
-			if (this.stack.length > 0) {
-				this.stack.unshift(oldTds);
-			} else {
-				this.stack = [oldTds];
-			}
-			this.i = -1;
-			if (this.stack.length > 50) { //undoable count, we want to be careful of too much memory consumption
-				this.stack.pop(); //drop the last value
-			}
-		},
-		i: 0,
-		stack: []
 	}
 };
 
@@ -2733,7 +2645,6 @@ var key = {
 	CAPS_LOCK: 			20,
 	COMMA: 				188,
 	CONTROL: 			17,
-	ALT:				18,
 	DELETE: 			46,
 	DOWN: 				40,
 	END: 				35,
@@ -2756,9 +2667,7 @@ var key = {
 	SPACE: 				32,
 	TAB: 				9,
 	UP: 				38,
-	V:					86,
-	Y:					89,
-	Z:					90
+	V:					86
 };
 
 var cE = jQuery.calculationEngine = {
