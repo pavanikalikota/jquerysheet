@@ -11,4 +11,4 @@ jQuery.sheet is also theme-able, using jQuery UI ThemeRoller, so you make the sp
 
 Why did I start jQuery.sheet?  I like a challenge, I like to learn, I like to contribute, and I saw where other attempts at the same thing, although being nice, could be improved.  And with the web basically migrating in it's entirety over to jQuery, I wanted to put some fun back into my javascripting.
 
-<a href="http://visop-dev.com/lib/jquery/jquery.sheet/jquery.sheet.html">Click Here for a Demo</a>
+<a href="http://visop-dev.com/lib/jquery.sheet/jquery.sheet.html">Click Here for a Demo</a>
