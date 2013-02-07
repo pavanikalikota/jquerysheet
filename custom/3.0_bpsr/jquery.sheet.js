@@ -13,12 +13,6 @@
  * @namespace
  * @name jQuery.fn
  */
-var jQuery = jQuery || {
-	fn: {
-		extend: function () {
-		}
-	}
-};
 jQuery.fn.extend({
 	/**
 	 * @description
@@ -419,7 +413,7 @@ jQuery.fn.extend({
 							case 'object':
 								return val;
 							case 'number':
-								return Globalize.format(val, 'n');
+								return Globalize.format(val).replace(/[\.,]00$/, "");
 						}
 
 						if (!val) {
@@ -430,7 +424,7 @@ jQuery.fn.extend({
 						}
 						var num = $.trim(val) * 1;
 						if (!isNaN(num)) {
-							return Globalize.format(num, 'n');
+							return Globalize.format(num).replace(/[\.,]00$/, "");
 						}
 
 						return val
@@ -438,8 +432,8 @@ jQuery.fn.extend({
 							.replace(/>/gi, '&gt;')
 							.replace(/</gi, '&lt;')
 							.replace(/\n/g, '\n<br>')
-							.replace(/\t/g, '&nbsp;&nbsp;')
-							.replace(/ /g, '&nbsp;');
+							.replace(/\t/g, '&nbsp;&nbsp;&nbsp ')
+							.replace(/  /g, '&nbsp; ');
 					},
 					frozenAt:[],
 					contextmenuTop:{
@@ -806,7 +800,7 @@ jQuery.sheet = {
 			 * @name version
 			 * @type {String}
 			 */
-			version:'3.0',
+			version:'3.0_bpsr',
 
 			/**
 			 * The active sheet index within the a set of sheets
