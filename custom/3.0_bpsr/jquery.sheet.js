@@ -2620,6 +2620,14 @@ jQuery.sheet = {
 
 				var row = tsv.parse(val);
 
+				//Single cell value
+				if (!$.isArray(row)) {
+					formula.val(row);
+					jS.evt.cellEditDone(true);
+					return true;
+				}
+
+				//values that need put into multi cells
 				for (var i = 0; i < row.length; i++) {
 					jS.cellLast.isEdit = true;
 					var col = row[i];
@@ -5564,6 +5572,8 @@ jQuery.sheet = {
 					jS.setActiveSheet(jS.sheetCount);
 
 					jS.sheetSyncSize();
+
+					jS.obj.pane().trigger('resizeScroll');
 
 					jS.trigger('sheetAdd', [jS.i]);
 				}
