@@ -185,9 +185,9 @@
 	border-color: inherit ! important;
 	color:  inherit ! important;
 }
-.jS td:not(.jSBarLeft):not(.jSBarTop):not(.jSBarCorner), .jS th {
+.jS td {
 	height: inherit;
-	border-width: 1px ! important;
+	border-width: 1px;
 	border-color: inherit;
 	padding: 0px ! important;
 	border-style: solid ! important;
@@ -197,6 +197,19 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	-ms-text-overflow: ellipsis;
+}
+
+.jS td.jSBarCorner {
+	border-width: 0px;
+}
+
+.jS td.jSBarLeft {
+	border-width: 1px 0px 1px 0px;
+}
+
+.jS td.jSBarTop {
+	border-width: 0px 1px 0px 1px;
 }
 
 .jSCellHighighted {

@@ -2623,7 +2623,7 @@ jQuery.sheet = {
 				//Single cell value
 				if (!$.isArray(row)) {
 					formula.val(row);
-					jS.evt.cellEditDone(true);
+					jS.fillUpOrDown(false, false, row);
 					return true;
 				}
 
