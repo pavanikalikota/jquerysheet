@@ -408,12 +408,19 @@ jQuery.fn.extend({
 					error:function (e) {
 						return e.error;
 					},
+					endOfNumber: false,
 					encode:function (val) {
+						if (!this.endOfNumber) {
+							var radix = Globalize.culture().numberFormat['.'];
+							this.endOfNumber = new RegExp("([" + (radix == '.' ? "\." : radix) + "])([0-9]*?[1-9]+)?(0)*$");
+						}
 						switch (typeof val) {
 							case 'object':
 								return val;
 							case 'number':
-								return Globalize.format(val).replace(/[\.,]00$/, "");
+								return Globalize.format(val, "n10").replace(this.endOfNumber, function (orig, radix, num) {
+									return (num ? radix : '') + (num || '');
+								});
 						}
 
 						if (!val) {
@@ -424,7 +431,9 @@ jQuery.fn.extend({
 						}
 						var num = $.trim(val) * 1;
 						if (!isNaN(num)) {
-							return Globalize.format(num).replace(/[\.,]00$/, "");
+							return Globalize.format(num, "n10").replace(this.endOfNumber, function (orig, radix, num) {
+								return (num ? radix : '') + (num || '');
+							});
 						}
 
 						return val
