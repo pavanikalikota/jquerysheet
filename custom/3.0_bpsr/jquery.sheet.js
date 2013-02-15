@@ -518,7 +518,7 @@ jQuery.fn.extend({
 						},
 						"line1":"line",
 						"Insert row after":function (jS) {
-							jS.controlFactory.addRow();
+							jS.controlFactory.addRow(jS.rowLast);
 							return false;
 						},
 						"Insert row before":function (jS) {
@@ -535,7 +535,10 @@ jQuery.fn.extend({
 						},
 						"line2":'line',
 						"Add spreadsheet":function (jS) {
-							jS.addSheet('5x10');
+							jS.addSheet({
+								rows:25,
+								cols:10
+							});
 						},
 						"Delete spreadsheet":function (jS) {
 							jS.deleteSheet();
@@ -2627,7 +2630,7 @@ jQuery.sheet = {
 
 				if (loc.row == 0 && loc.col == 0) return false; //at this point we need to check if there is even a cell selected, if not, we can't save the information, so clear formula editor
 
-				var row = tsv.parse(val);
+				var row = tsv.parse(':::::' + val);
 
 				//Single cell value
 				if (!$.isArray(row)) {
