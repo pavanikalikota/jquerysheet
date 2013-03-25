@@ -1820,10 +1820,6 @@ jQuery.sheet = {
 												o.cols[j].setAttribute('style', 'width:' + jS.s.newColumnWidth + 'px;');
 												o.cols[j].bar = td;
 												j++;
-
-												o.cols[j].setAttribute('style', 'width:' + jS.s.newColumnWidth + 'px;');
-												o.cols[j].bar = td[0];
-												j++;
 											} else {
 												jS.spreadsheets[jS.i][row].splice(col, 0, {});
 												jS.createCell(jS.i, row, col);
@@ -1888,11 +1884,6 @@ jQuery.sheet = {
 						jS.colLast = activeCell[0].cellIndex;
 						jS.rowLast = activeCell[0].parentNode.rowIndex;
 					}
-
-					if (activeCell && activeCell[0] && activeCell[0].cellIndex && activeCell[0].parentNode) {
-						jS.colLast = activeCell[0].cellIndex;
-						jS.rowLast = activeCell[0].parentNode.rowIndex;
-					}
 				},
 
 				/**
@@ -1938,7 +1929,7 @@ jQuery.sheet = {
 							sheet.barLeft.unshift(td);
 							tr[i].insertBefore(td, tr[i].children[0])
 						} while(i-- > 1); //We only go till row 1, row 0 is handled by barTop with corner etc
-						}
+					}
 				},
 
 				/**
@@ -2397,13 +2388,13 @@ jQuery.sheet = {
 						};
 						formula.onpaste = jS.evt.pasteOverCells;
 						formula.onfocus = function () {
-								jS.setNav(false);
+							jS.setNav(false);
 						};
 						formula.onfocusout = function () {
-								jS.setNav(true);
+							jS.setNav(true);
 						};
 						formula.onblur = function () {
-								jS.setNav(true);
+							jS.setNav(true);
 						};
 						jS.controls.formula = $(formula);
 
@@ -2489,10 +2480,10 @@ jQuery.sheet = {
 						addSheet.setAttribute('title', jS.msg.addSheet);
 						addSheet.innerHTML = '&nbsp;+&nbsp;';
 						addSheet.onmousedown = function () {
-								jS.addSheet({
-									rows:25,
-									cols:10
-								});
+							jS.addSheet({
+								rows:25,
+								cols:10
+							});
 
 							return false;
 						};
@@ -2545,16 +2536,16 @@ jQuery.sheet = {
 					scrollOuter.appendChild(scrollInner);
 
 					scrollOuter.onscroll = function() {
-							if (!jS.isBusy()) {
+						if (!jS.isBusy()) {
 							jS.evt.scroll.scrollTo({axis:'x', pixel:scrollOuter.scrollLeft}, 0);
 							jS.evt.scroll.scrollTo({axis:'y', pixel:scrollOuter.scrollTop}, 0);
 
-								jS.autoFillerGoToTd();
-							}
+							jS.autoFillerGoToTd();
+						}
 					};
 
 					scrollOuter.onmousedown = function() {
-							jS.obj.barHelper().remove();
+						jS.obj.barHelper().remove();
 					};
 
 					jS.controls.scroll[jS.i] = $(scrollOuter)
@@ -2563,19 +2554,19 @@ jQuery.sheet = {
 					jS.controls.scrolls = jS.obj.scrolls().add(scrollOuter);
 
 					scrollStyleX.updateStyle = function (indexes, styleOverride) {
-								indexes = indexes || [];
+						indexes = indexes || [];
 
-								if (indexes.length == x) return;
-								x = indexes.length;
+						if (indexes.length == x) return;
+						x = indexes.length;
 
 						var style = styleOverride || self.nthCss('col', '#' + jS.id.table + jS.i, this, indexes, jS.frozenAt().col + 1) +
 							self.nthCss('td', '#' + jS.id.table + jS.i + ' ' + 'tr', this, indexes, jS.frozenAt().col + 1);
 
-								if (this.styleSheet) {
-									this.styleSheet.cssText = style;
-								} else {
+						if (this.styleSheet) {
+							this.styleSheet.cssText = style;
+						} else {
 							this.innerHTML = style;
-								}
+						}
 
 						jS.scrolledTo();
 						jS.scrolledArea[jS.i].start.col = math.max(indexes.pop() || 1, 1);
@@ -2593,18 +2584,18 @@ jQuery.sheet = {
 
 
 					scrollStyleY.updateStyle = function (indexes, styleOverride) {
-								indexes = indexes || [];
+						indexes = indexes || [];
 
-								if (indexes.length == y) return;
-								y = indexes.length;
+						if (indexes.length == y) return;
+						y = indexes.length;
 
 						var style = styleOverride || self.nthCss('tr', '#' + jS.id.table + jS.i, this, indexes, jS.frozenAt().row + 1);
 
-								if (this.styleSheet) { //IE compatibility
-									this.styleSheet.cssText = style;
-								} else {
+						if (this.styleSheet) { //IE compatibility
+							this.styleSheet.cssText = style;
+						} else {
 							this.innerHTML = style;
-								}
+						}
 
 						jS.scrolledTo();
 						jS.scrolledArea[jS.i].start.row = math.max(indexes.pop() || 1, 1);
@@ -2626,8 +2617,8 @@ jQuery.sheet = {
 					pane.appendChild(scrollStyleX);
 					pane.appendChild(scrollStyleY);
 					pane.resizeScroll = function () {
-							xStyle = styleString(scrollStyleX);
-							yStyle = styleString(scrollStyleY);
+						xStyle = styleString(scrollStyleX);
+						yStyle = styleString(scrollStyleY);
 
 						scrollStyleX.updateStyle();
 						scrollStyleY.updateStyle();
@@ -2707,11 +2698,11 @@ jQuery.sheet = {
 						var style = self.nthCss('col', '#' + jS.id.table + jS.i, this, jS.toggleHide.hiddenColumns[jS.i], 0) +
 							self.nthCss('td', '#' + jS.id.table + jS.i + ' tr', this, jS.toggleHide.hiddenColumns[jS.i], 0);
 
-								if (this.styleSheet) {
-									this.styleSheet.cssText = style;
-								} else {
+						if (this.styleSheet) {
+							this.styleSheet.cssText = style;
+						} else {
 							this.innerHTML = style;
-								}
+						}
 
 						jS.autoFillerGoToTd();
 					};
@@ -2719,11 +2710,11 @@ jQuery.sheet = {
 					toggleHideStyleY.updateStyle = function (e) {
 						var style = self.nthCss('tr', '#' + jS.id.table + jS.i, this, jS.toggleHide.hiddenRows[jS.i], 0);
 
-								if (this.styleSheet) {
-									this.styleSheet.cssText = style;
-								} else {
+						if (this.styleSheet) {
+							this.styleSheet.cssText = style;
+						} else {
 							this.innerHTML = style;
-								}
+						}
 
 						jS.autoFillerGoToTd();
 					};
@@ -2806,30 +2797,27 @@ jQuery.sheet = {
 							e = e || win.event;
 							e.target = e.target || e.srcElement;
 
-								jS.setNav(true);
-								if (jS.isBusy()) {
-									return false;
-								}
+							jS.setNav(true);
+							if (jS.isBusy()) {
+								return false;
+							}
 
 							if (jS.isCell(e.target)) {
 								if (e.button == 2) {
 									paneContextmenuEvent(e);
 								}
-									if (e.button == 2) {
-										paneContextmenuEvent(e);
-									}
-									jS.evt.cellOnMouseDown(e);
-									return false;
-								}
+								jS.evt.cellOnMouseDown(e);
+								return false;
+							}
 
-								if (jS.isBar(e.target)) { //possibly a bar
+							if (jS.isBar(e.target)) { //possibly a bar
 								if (e.button == 2) {
 									paneContextmenuEvent(e);
 								}
 								mouseDownEntity = e.target.entity;
-									jS.evt.barInteraction.select(e.target);
-									return false;
-								}
+								jS.evt.barInteraction.select(e.target);
+								return false;
+							}
 						};
 
 						pane.onmouseup = function() {
@@ -2839,37 +2827,37 @@ jQuery.sheet = {
 						pane.onmouseover = function (e) {
 							e = e || win.event;
 							e.target = e.target || e.srcElement;
-								//This manages bar resize, bar menu, and bar selection
-								if (jS.isBusy()) {
-									return false;
-								}
+							//This manages bar resize, bar menu, and bar selection
+							if (jS.isBusy()) {
+								return false;
+							}
 
 							if (!jS.isBar(e.target)) {
 								return false;
 							}
-								var bar = $(e.target),
+							var bar = $(e.target),
 								entity = e.target.entity,
-									i = jS.getBarIndex[entity](e.target);
+								i = jS.getBarIndex[entity](e.target);
 
-								if (i < 0) {
-									return false;
-								}
+							if (i < 0) {
+								return false;
+							}
 
 							if (jS.evt.barInteraction.selecting && entity == mouseDownEntity) {
-									jS.evt.barInteraction.last = i;
+								jS.evt.barInteraction.last = i;
 
-									jS.cellSetActiveBar(entity, jS.evt.barInteraction.first, jS.evt.barInteraction.last);
-								} else {
+								jS.cellSetActiveBar(entity, jS.evt.barInteraction.first, jS.evt.barInteraction.last);
+							} else {
 								jS.resizeBar[entity](bar, i, pane, table);
 
-									if (jS.isSheetEditable()) {
-										jS.controlFactory.barHandleFreeze[entity](pane);
+								if (jS.isSheetEditable()) {
+									jS.controlFactory.barHandleFreeze[entity](pane);
 
-										if (entity == "top") {
-											jS.controlFactory.barMenu[entity](e, i, bar);
-										}
+									if (entity == "top") {
+										jS.controlFactory.barMenu[entity](e, i, bar);
 									}
 								}
+							}
 						};
 
 						pane.ondblclick = jS.evt.cellOnDblClick;
@@ -3066,16 +3054,16 @@ jQuery.sheet = {
 
 					autoFiller.onmousedown = function () {
 						var td = jS.obj.tdActive();
-								if (td) {
-									var loc = jS.getTdLocation(td);
-									jS.cellSetActive(td, loc, true, jS.autoFillerNotGroup, function () {
-										var highlighted = jS.highlighted(),
-											hLoc = jS.getTdLocation(highlighted.first());
-										jS.fillUpOrDown(hLoc.row < loc.row || hLoc.col < loc.col);
-										jS.autoFillerGoToTd(highlighted.last());
-										jS.autoFillerNotGroup = false;
-									});
-								}
+						if (td) {
+							var loc = jS.getTdLocation(td);
+							jS.cellSetActive(td, loc, true, jS.autoFillerNotGroup, function () {
+								var highlighted = jS.highlighted(),
+									hLoc = jS.getTdLocation(highlighted.first());
+								jS.fillUpOrDown(hLoc.row < loc.row || hLoc.col < loc.col);
+								jS.autoFillerGoToTd(highlighted.last());
+								jS.autoFillerNotGroup = false;
+							});
+						}
 					};
 
 					jS.controls.autoFiller[jS.i] = $(autoFiller);
@@ -3682,7 +3670,7 @@ jQuery.sheet = {
 								start.row--;
 								start.row = math.max(start.row, 1);
 								break;
-					}
+							}
 
 							end.row = grid.end.row;
 							end.row--;
@@ -3695,7 +3683,7 @@ jQuery.sheet = {
 								start.row++;
 								start.row = math.min(start.row, size.rows);
 								break;
-					}
+							}
 
 							end.row = grid.end.row;
 							end.row++;
@@ -4158,8 +4146,8 @@ jQuery.sheet = {
 			 */
 			isCell:function (o) {
 				if (o && o.tagName && o.tagName == 'TD' && o.type && o.type == 'cell') {
-							return true;
-						}
+					return true;
+				}
 				return false;
 			},
 
@@ -4172,8 +4160,8 @@ jQuery.sheet = {
 			 */
 			isBar:function (o) {
 				if (o && o.tagName && o.tagName == 'TD' && o.type && o.type == 'bar') {
-							return true;
-						}
+					return true;
+				}
 				return false;
 			},
 
@@ -4938,13 +4926,13 @@ jQuery.sheet = {
 								hasColgroup = true;
 								colgroup = children[i];
 								break;
-				}
+						}
 					} while (i--);
 
 					if (!tbody) {
 						tbody = doc.createElement('tbody');
 						$(children).wrap(tbody);
-				}
+					}
 
 					if (!colgroup || colgroup.children.length < 1) {
 						colgroup = doc.createElement('colgroup');
@@ -5451,7 +5439,7 @@ jQuery.sheet = {
 				jS.trigger('sheetCellEdit', [cell]);
 
 				if (!td.is(jS.cellLast.td)) {
-				jS.followMe(td);
+					jS.followMe(td);
 				}
 
 				//Show where we are to the user
@@ -5489,7 +5477,7 @@ jQuery.sheet = {
 					jS.cellLast.col = jS.colLast = loc.col;
 
 					if (!doNotClearHighlighted) {
-					jS.themeRoller.cell.setHighlighted(td); //themeroll the cell and bars
+						jS.themeRoller.cell.setHighlighted(td); //themeroll the cell and bars
 						jS.highlightedLast.start = loc;
 						jS.highlightedLast.end = loc;
 					}
@@ -5524,29 +5512,29 @@ jQuery.sheet = {
 						pane.onmousemove = function (e) {
 							e = e || win.event;
 							e.target = e.target || e.srcElement;
-								if (jS.isBusy()) return false;
+							if (jS.isBusy()) return false;
 
 							var locEnd = jS.highlightedLast.end = jS.getTdLocation(e.target),
 								ok = true;
 
-								if (locEnd.col < 1 || locEnd.row < 1) return false; //bar
+							if (locEnd.col < 1 || locEnd.row < 1) return false; //bar
 
-								if (directional) {
-									ok = false;
-									if (loc.col == locEnd.col || loc.row == locEnd.row) {
-										ok = true;
-									}
+							if (directional) {
+								ok = false;
+								if (loc.col == locEnd.col || loc.row == locEnd.row) {
+									ok = true;
 								}
+							}
 
-								if ((locTrack.last.col != locEnd.col || locTrack.last.row != locEnd.row) && ok) { //this prevents this method from firing too much
-									//select active cell if needed
-									selectModel(e.target);
+							if ((locTrack.last.col != locEnd.col || locTrack.last.row != locEnd.row) && ok) { //this prevents this method from firing too much
+								//select active cell if needed
+								selectModel(e.target);
 
-									//highlight the cells
-									jS.cycleCellArea(function (o) {
-										jS.themeRoller.cell.setHighlighted(o.td);
-									}, loc, locEnd);
-								}
+								//highlight the cells
+								jS.cycleCellArea(function (o) {
+									jS.themeRoller.cell.setHighlighted(o.td);
+								}, loc, locEnd);
+							}
 
 							locTrack.last = locEnd;
 						};
@@ -5557,9 +5545,9 @@ jQuery.sheet = {
 							pane.onmouseup = null;
 							doc.onmouseup = null;
 
-								if (fnDone) {
-									fnDone();
-								}
+							if (fnDone) {
+								fnDone();
+							}
 						};
 					}
 				}
@@ -7837,7 +7825,7 @@ jQuery.sheet = {
 				tr.setAttribute('style', 'height:15px;');
 				for (var j = size.cols; j >= 1; j--) {
 					tr.appendChild(doc.createElement('td'));
-			}
+				}
 				tbody.appendChild(tr);
 			}
 
