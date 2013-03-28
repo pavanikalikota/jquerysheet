@@ -9,7 +9,7 @@
  *
  */
 
-(function($) {
+(function($, doc) {
 	/**
 	 * @namespace
 	 * @name dts
@@ -68,52 +68,68 @@
 			 */
 			json: function(json) {
 
-				var tables = $([]);
+				var tables = $([]),
+					spreadsheet,
+					rows,
+					row,
+					columns,
+					column,
+					metadata,
+					widths,
+					width,
+					frozenAt;
 
-				$.each(json, function() {
-					var table = $('<table />');
-					if (this['title']) table.attr('title', this['title'] || '');
+				for (var i = 0; i < json.length; i++) {
+					spreadsheet = json[i];
+					var table = $(doc.createElement('table'));
+					if (spreadsheet['title']) table.attr('title', spreadsheet['title'] || '');
 
 					tables = tables.add(table);
 
-					$.each(this['rows'], function() {
-						if (this['height']) {
-							var tr = $('<tr />')
+					rows = spreadsheet['rows'];
+					for (var j = 0; j < rows.length; j++) {
+						row = rows[j];
+						if (row['height']) {
+							var tr = $(doc.createElement('tr'))
 								.attr('height', this['height'])
 								.css('height', this['height'])
 								.appendTo(table);
 						}
-						$.each(this['columns'], function() {
-							var td = $('<td />')
+						columns = row['columns'];
+						for (var k = 0; k < columns.length; k++) {
+							column = columns[k];
+							var td = $(doc.createElement('td'))
 								.appendTo(tr);
 
-							if (this['class']) td.attr('class', this['class'] || '');
-							if (this['style']) td.attr('style', this['style'] || '');
-							if (this['formula']) td.data('formula', (this['formula'] ? '=' + this['formula'] : ''))
-							if (this['value']) td.html(this['value'] || '')
-						});
-					});
+							if (column['class']) td.attr('class', column['class'] || '');
+							if (column['style']) td.attr('style', column['style'] || '');
+							if (column['formula']) td.attr('data-formula', (column['formula'] ? '=' + column['formula'] : ''))
+							if (column['value']) td.html(column['value'] || '')
+						}
+					}
 
-					if (!this['metadata']) return;
-					if (this['metadata']['widths']) {
-						var colgroup = $('<colgroup />')
-							.prependTo(table);
-						for(var width in this['metadata']['widths']) {
-							var col = $('<col />')
-								.attr('width', this['metadata']['widths'][width])
-								.css('width', this['metadata']['widths'][width])
-								.appendTo(colgroup);
+					if (metadata = spreadsheet['metadata']) {
+						if (widths = metadata['widths']) {
+							var colgroup = $(doc.createElement('colgroup'))
+								.prependTo(table);
+							for(var k = 0; k < widths.length; k++) {
+								width = widths[k];
+								var col = $(doc.createElement('col'))
+									.attr('width', width)
+									.css('width', width)
+									.appendTo(colgroup);
+							}
+						}
+						if (frozenAt = metadata['frozenAt']) {
+							if (frozenAt['row']) {
+								table.attr('data-frozenatrow', frozenAt['row']);
+							}
+							if (frozenAt['col']) {
+								table.attr('data-frozenatcol', frozenAt['col']);
+							}
 						}
 					}
-					if (this['metadata']['frozenAt']) {
-						if (this['metadata']['frozenAt']['row']) {
-							table.data('frozenatrow', this['metadata']['frozenAt']['row']);
-						}
-						if (this['metadata']['frozenAt']['col']) {
-							table.data('frozenatcol', this['metadata']['frozenAt']['col']);
-						}
-					}
-				});
+				}
 
 				return tables;
 			},
@@ -162,98 +178,78 @@
 			xml: function(xml) {
 				xml = $.parseXML(xml);
 
-				var tables = $([]);
+				var tables = $([]),
+					spreadsheets = xml.getElementsByTagName('spreadsheets')[0].getElementsByTagName('spreadsheet'),
+					spreadsheet,
+					rows,
+					row,
+					columns,
+					column,
+					attr,
+					metadata,
+					frozenat,
+					frozenatrow,
+					frozenatcol,
+					widths,
+					width;
 
-				$.each(xml.childNodes, function(i, spreadsheets) {
-					$.each(this.childNodes, function(j,  spreadsheet) {
-						var table = $('<table />').attr('title', (this.attributes['title'] ? this.attributes['title'].nodeValue : '')),
-							colgroup = $('<colgroup/>').appendTo(table),
-							tbody = $('<tbody />').appendTo(table);
+				for (var i = 0; i < spreadsheets.length; i++) {
+					spreadsheet = spreadsheets[i];
+					var table = $(doc.createElement('table')).attr('title', (spreadsheet.attributes['title'] ? spreadsheet.attributes['title'].nodeValue : '')),
+						colgroup = $(doc.createElement('colgroup')).appendTo(table),
+						tbody = $(doc.createElement('tbody')).appendTo(table);
 
-						tables = tables.add(table);
+					tables = tables.add(table);
 
-						$.each(this.childNodes, function(k, rows){ //rows
-							switch (this.nodeName.toLowerCase()) {
-								case 'rows':
-									$.each(this.childNodes, function(l, row) { //row
-										switch (this.nodeName.toLowerCase()) {
-											case 'row':
-												var tr = $('<tr/>').appendTo(tbody);
+					rows = spreadsheet.getElementsByTagName('rows')[0].getElementsByTagName('row');
+					metadata = spreadsheet.getElementsByTagName('metadata')[0];
 
-												if (this.attributes['height']) {
-													tr
-														.css('height', (this.attributes['height'] ? this.attributes['height'].nodeValue : ''))
-														.attr('height', (this.attributes['height'] ? this.attributes['height'].nodeValue : ''));
-												}
+					for (var l = 0; l < rows.length; l++) {//row
+						row = rows[l];
+						var tr = $(doc.createElement('tr')).appendTo(tbody);
 
-												$.each(this.childNodes, function(m, columns) {
-													switch (this.nodeName.toLowerCase()) {
-														case 'columns':
-															$.each(this.childNodes, function(n, column) {
-																switch (this.nodeName.toLowerCase()) {
-																	case 'column':
-																		var td = $('<td />').appendTo(tr);
-																		$.each(this.childNodes, function(p, attr) { //formula or value or style
-																			switch (this.nodeName.toLowerCase()) {
-																				case 'formula':
-																					td.data('formula', '=' + (this.textContent || this.text));
-																					break
-																				case 'value':
-																					td.html(this.textContent || this.text);
-																					break;
-																				case 'style':
-																					td.attr('style', this.textContent || this.text);
-																					break;
-																				case 'class':
-																					td.attr('class', this.textContent || this.text);
-																			}
-																		});
-																		break;
-																}
-															});
-													}
-												});
+						if (row.attributes['height']) {
+							tr
+								.css('height', (row.attributes['height'] ? row.attributes['height'].nodeValue : ''))
+								.attr('height', (row.attributes['height'] ? row.attributes['height'].nodeValue : ''));
+						}
 
-												break;
+						columns = row.getElementsByTagName('columns')[0].getElementsByTagName('column');
+						for (var m = 0; m < columns.length; m++) {
+							column = columns[m];
+							var td = $(doc.createElement('td')).appendTo(tr),
+								formula = column.getElementsByTagName('formula')[0],
+								value = column.getElementsByTagName('value')[0],
+								style = column.getElementsByTagName('style')[0],
+								cl = column.getElementsByTagName('class')[0];
 
-										}
-									});
-									break;
-								case 'metadata':
-									$.each(this.childNodes, function() {
-										switch (this.nodeName.toLowerCase()) {
-											case 'frozenat':
-												$.each(this.childNodes, function() {
-													switch (this.nodeName.toLowerCase()) {
-														case 'row':
-															table.data('frozenatrow', (this.textContent || this.text) * 1);
-															break;
-														case 'col':
-															table.data('frozenatcol', (this.textContent || this.text) * 1);
-															break;
-													}
-												});
-												break;
-											case 'widths':
-												$.each(this.childNodes, function() {
-													switch (this.nodeName.toLowerCase()) {
-														case 'width':
-															$('<col/>')
-																.attr('width', this.textContent || this.text)
-																.css('width', this.textContent || this.text)
-																.appendTo(colgroup);
-															break;
-													}
-												});
-												break;
-										}
-									});
-									break;
-							}
-						});
-					});
-				});
+							if (formula) td.attr('data-formula', '=' + (formula.textContent || formula.text));
+							if (value) td.html(value.textContent || value.text);
+							if (style) td.attr('style', style.textContent || style.text);
+							if (cl) td.attr('class', cl.textContent || cl.text);
+						}
+					}
 
+					widths = metadata.getElementsByTagName('width');
+					for (var l = 0; l < widths.length; l++) {
+						width = widths[l];
+						$(doc.createElement('col'))
+							.attr('width', width.textContent || width.text)
+							.css('width', width.textContent || width.text)
+							.appendTo(colgroup);
+					}
+
+					frozenat = metadata.getElementsByTagName('frozenAt')[0];
+					if (frozenat) {
+						frozenatcol = frozenat.getElementsByTagName('col')[0];
+						frozenatrow = frozenat.getElementsByTagName('row')[0];
+
+						if (frozenatcol) table.attr('data-frozenatcol', (frozenatcol.textContent || frozenatcol.text) * 1);
+						if (frozenatrow) table.attr('data-frozenatrow', (frozenatrow.textContent || frozenatrow.text) * 1);
+					}
+
+
+				}
 				return tables;
 			}
 		},
@@ -267,6 +263,7 @@
 			/**
 			 * Create a table from json
 			 * @param {Object} jS, required, the jQuery.sheet instance
+			 * @param {Boolean} doNotTrim, cut down on added json by trimming to only edited area
 			 * @returns {Array}  - schema:
 			 * [{ // sheet 1, can repeat
 			 *  "title": "Title of spreadsheet",
@@ -306,14 +303,33 @@
 			 * @methodOf jQuery.sheet.dts.fromTables
 			 * @name json
 			 */
-			json: function(jS) {
-				var output = [], i = 1 * jS.i;
+			json: function(jS, doNotTrim) {
+				doNotTrim = (doNotTrim == undefined ? false : doNotTrim);
 
-				for (var sheet in jS.spreadsheets) {
+				var output = [],
+					i = 1 * jS.i,
+					sheet = jS.spreadsheets.length - 1,
+					jsonSpreadsheet,
+					spreadsheet,
+					row,
+					column,
+					parentAttr,
+					jsonRow,
+					jsonColumn,
+					cell,
+					attr,
+					cl,
+					parent,
+					rowHasValues;
+
+
+				if (sheet < 0) return output;
+
+				do {
+					rowHasValues = false;
 					jS.i = sheet;
 					jS.evt.cellEditDone();
-					var metadata = [];
-					var spreadsheet = {
+					jsonSpreadsheet = {
 						"title": (jS.obj.table().attr('title') || ''),
 						"rows": [],
 						"metadata": {
@@ -321,50 +337,62 @@
 							"frozenAt": $.extend({}, jS.frozenAt())
 						}
 					};
-					output.push(spreadsheet);
 
-					for (var row in jS.spreadsheets[sheet]) {
-						if (row == 0) continue;
-						var parentAttr = jS.spreadsheets[sheet][row][1].td[0].parentNode.attributes,
-							Row = {
-								"height": null,
-								"columns": [],
-								"height": (parentAttr['height'] ? parentAttr['height'].value : jS.s.colMargin + 'px')
-							};
-						spreadsheet.rows.push(Row);
+					output.unshift(jsonSpreadsheet);
 
-						for (var column in jS.spreadsheets[sheet][row]) {
-							if (column == 0) continue;
-							var cell = jS.spreadsheets[sheet][row][column],
-								Column = {},
-								attr = cell.td[0].attributes,
+					spreadsheet = jS.spreadsheets[sheet];
+					row = spreadsheet.length - 1;
+					do {
+						parentAttr = spreadsheet[row][1].td[0].parentNode.attributes;
+						jsonRow = {
+							"height": null,
+							"columns": [],
+							"height": (parentAttr['height'] ? parentAttr['height'].value : jS.s.colMargin + 'px')
+						};
+
+						column = spreadsheet[row].length - 1;
+						do {
+							cell = spreadsheet[row][column];
+							jsonColumn = {};
+							attr = cell.td[0].attributes;
+
+							if (doNotTrim || rowHasValues || attr['class'] || cell['formula'] || cell['value'] || attr['style']) {
+								rowHasValues = true;
+
 								cl = (attr['class'] ? $.trim(
 									(attr['class'].value || '')
 										.replace(jS.cl.uiCellActive , '')
 										.replace(jS.cl.uiCellHighlighted, '')
-								) : ''),
+								) : '');
+
 								parent = cell.td[0].parentNode;
 
-							Row.columns.push(Column);
+								jsonRow.columns.unshift(jsonColumn);
 
-							if (!Row["height"]) {
-								Row["height"] = (parent.attributes['height'] ? parent.attributes['height'].value : jS.s.colMargin + 'px');
-							}
+								if (!jsonRow["height"]) {
+									jsonRow["height"] = (parent.attributes['height'] ? parent.attributes['height'].value : jS.s.colMargin + 'px');
+								}
 
-							if (cell['formula']) Column['formula'] = cell['formula'];
-							if (cell['value']) Column['value'] = cell['value'];
-							if (attr['style'] && attr['style'].value) Column['style'] = attr['style'].value;
+								if (cell['formula']) jsonColumn['formula'] = cell['formula'];
+								if (cell['value']) jsonColumn['value'] = cell['value'];
+								if (attr['style'] && attr['style'].value) jsonColumn['style'] = attr['style'].value;
 
-							if (cl.length) {
-								Column['class'] = cl;
+								if (cl.length) {
+									jsonColumn['class'] = cl;
+								}
 							}
 
 							if (row * 1 == 1) {
-								spreadsheet.metadata.widths.push($(jS.col(null, column)).css('width'));
+								jsonSpreadsheet.metadata.widths.unshift($(jS.col(null, column)).css('width'));
 							}
+						} while (column-- > 1);
+
+						if (rowHasValues) {
+							jsonSpreadsheet.rows.unshift(jsonRow);
 						}
-					}
-				}
+
+					} while (row-- > 1);
+				} while (sheet--);
 				jS.i = i;
 
 				return output;
@@ -373,6 +401,7 @@
 			/**
 			 * Create a table from xml
 			 * @param {Object} jS, required, the jQuery.sheet instance
+			 * @param {Boolean} doNotTrim, cut down on added json by trimming to only edited area
 			 * @returns {String} - schema:
 			 * &lt;spreadsheets&gt;
 			 *     &lt;spreadsheet title="spreadsheet title"&gt;
@@ -411,28 +440,44 @@
 			 * @methodOf jQuery.sheet.dts.fromTables
 			 * @name xml
 			 */
-			xml: function(jS) {
-				var output = '<?xml version="1.0" encoding="UTF-8"?><spreadsheets xmlns="http://www.w3.org/1999/xhtml">',
-					i = 1 * jS.i;
+			xml: function(jS, doNotTrim) {
+				doNotTrim = (doNotTrim == undefined ? false : doNotTrim);
+				var output = '',
+					i = 1 * jS.i,
+					sheet = jS.spreadsheets.length - 1,
+					xmlSpreadsheet,
+					spreadsheet,
+					row,
+					column,
+					parentAttr,
+					xmlRow,
+					xmlColumn,
+					xmlColumns,
+					cell,
+					attr,
+					cl,
+					parent,
+					frozenAt,
+					rowHasValues;
 
-				for(var sheet in jS.spreadsheets) {
+				if (sheet < 0) return output;
+
+				do {
+					rowHasValues = false;
 					jS.i = sheet;
 					jS.evt.cellEditDone();
-					var frozenAt = $.extend({}, jS.frozenAt()),
-						widths = [];
+					frozenAt = $.extend({}, jS.frozenAt());
+					widths = [];
 
-					output += '<spreadsheet title="' + (jS.obj.table().attr('title') || '') + '">';
-
-					output += '<rows>';
-					for(var row in jS.spreadsheets[sheet]) {
-						if (row == 0) continue;
-						var parentAttr = jS.spreadsheets[sheet][row][1].td[0].parentNode.attributes;
-						output += '<row height="' + (parentAttr['height'] ? parentAttr['height'].value : jS.s.colMargin + 'px') + '">';
-						output += '<columns>';
-						for(var column in jS.spreadsheets[sheet][row]) {
-							if (column == 0) continue;
-
-							var cell = jS.spreadsheets[sheet][row][column],
+					spreadsheet = jS.spreadsheets[sheet];
+					row = spreadsheet.length - 1;
+					xmlRow = '';
+					do {
+						xmlColumns = '';
+						column = spreadsheet[row].length - 1;
+						do {
+							xmlColumn = '';
+							var cell = spreadsheet[row][column],
 								attr = cell.td[0].attributes,
 								cl = (attr['class'] ? $.trim(
 									(attr['class'].value || '')
@@ -440,44 +485,60 @@
 										.replace(jS.cl.uiCellHighlighted, '')
 								) : '');
 
-							output += '<column>';
+							if (doNotTrim || rowHasValues || cl || cell.formula || cell.value || attr['style']) {
+								rowHasValues = true;
 
-							if (cell.formula) output += '<formula>' + cell.formula + '</formula>';
-							if (cell.value) output += '<value>' + cell.value + '</value>';
-							if (attr['style']) output += '<style>' + attr['style'].value + '</style>';
-							if (cl) output += '<class>' + cl + '</class>';
+								xmlColumn += '<column>';
 
-							output += '</column>';
+								if (cell.formula) xmlColumn += '<formula>' + cell.formula + '</formula>';
+								if (cell.value) xmlColumn += '<value>' + cell.value + '</value>';
+								if (attr['style']) xmlColumn += '<style>' + attr['style'].value + '</style>';
+								if (cl) xmlColumn += '<class>' + cl + '</class>';
+
+								xmlColumn += '</column>';
+
+								xmlColumns = xmlColumn + xmlColumns;
+							}
 
 							if (row * 1 == 1) {
 								widths[column] = '<width>' + $(jS.col(null, column)).css('width') + '</width>';
 							}
+
+						} while (column -- > 1);
+
+						if (xmlColumns) {
+							parentAttr = spreadsheet[row][1].td[0].parentNode.attributes;
+							xmlRow = '<row height="' + (parentAttr['height'] ? parentAttr['height'].value : jS.s.colMargin + 'px') + '">' +
+								'<columns>' +
+									xmlColumns +
+								'</columns>' +
+							'</row>' + xmlRow;
 						}
-						output += '</columns>';
-						output += '</row>';
-					}
-					output += '</rows>';
 
-					output += '<metadata>' +
-						(
-							frozenAt.row || frozenAt.col ?
-								'<frozenAt>' +
-									(frozenAt.row ? '<row>' + frozenAt.row + '</row>' : '') +
-									(frozenAt.col ? '<col>' + frozenAt.col + '</col>' : '') +
-								'</frozenAt>' :
-								''
-						) +
-						'<widths>' + widths.join('') + '</widths>' +
-					'</metadata>';
+					} while (row-- > 1);
+					xmlSpreadsheet = '<spreadsheet title="' + (jS.obj.table().attr('title') || '') + '">' +
+						'<rows>' +
+							xmlRow +
+						'</rows>' +
+						'<metadata>' +
+							(
+								frozenAt.row || frozenAt.col ?
+									'<frozenAt>' +
+										(frozenAt.row ? '<row>' + frozenAt.row + '</row>' : '') +
+										(frozenAt.col ? '<col>' + frozenAt.col + '</col>' : '') +
+									'</frozenAt>' :
+									''
+							) +
+							'<widths>' + widths.join('') + '</widths>' +
+						'</metadata>' +
+					'</spreadsheet>';
 
-					output += '</spreadsheet>';
-				}
-
-				output += '</spreadsheets>';
+					output = xmlSpreadsheet + output;
+				} while (sheet--);
 
 				jS.i = i;
-				return output;
+				return '<?xml version="1.0" encoding="UTF-8"?><spreadsheets xmlns="http://www.w3.org/1999/xhtml">' + output + '</spreadsheets>';
 			}
 		}
 	};
-})(jQuery);
+})(jQuery, document);
