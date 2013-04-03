@@ -1985,7 +1985,7 @@ jQuery.sheet = {
 						barTopParent.insertBefore(td, tdCorner.nextSibling);
 					} while (i-- > 0);
 
-					table.barTop = barTopParent.children;
+					table.barTop = jS.controls.barTopParent[jS.i].children();
 
 					return barTopParent;
 				},
@@ -2082,7 +2082,7 @@ jQuery.sheet = {
 							stop:function (e, ui) {
 								jS.setBusy(false);
 								jS.setDirty(true);
-								var target = jS.nearest(handle, pane.table.tbody.children);
+								var target = jS.nearest(handle, $(pane.table.tbody.children));
 								jS.obj.barHelper().remove();
 								jS.scrolledTo().end.row = jS.frozenAt().row = math.max(jS.getTdLocation(target.children(0)).row - 1, 0);
 								jS.evt.scroll.start('y', pane);
@@ -2147,6 +2147,7 @@ jQuery.sheet = {
 										.data('msg', msg)
 										.click(function () {
 											menuItems[$(this).data('msg')].apply(this, [jS]);
+											menu.hide();
 											return false;
 										})
 										.appendTo(menu)
@@ -5211,8 +5212,13 @@ jQuery.sheet = {
 			},
 
 			frozenAt:function () {
-				if (!jS.s.frozenAt[jS.i]) jS.s.frozenAt[jS.i] = {row:0, col:0};
-				return jS.s.frozenAt[jS.i];
+				var frozenAt;
+				if (!(frozenAt = jS.s.frozenAt[jS.i])) frozenAt = {row:0, col:0};
+
+				frozenAt.row = math.max(frozenAt.row, 0);
+				frozenAt.col = math.max(frozenAt.col, 0);
+
+				return frozenAt;
 			},
 
 			scrolledTo:function () {
@@ -5977,7 +5983,9 @@ jQuery.sheet = {
 					if (!(cell = row[loc.col])) return;
 
 					if (!cell.dependencies) cell.dependencies = [];
-					cell.dependencies.push(this);
+					if ($.inArray(this, cell.dependencies) < 0) {
+						cell.dependencies.push(this);
+					}
 					return cell;
 				},
 
@@ -6438,6 +6446,7 @@ jQuery.sheet = {
 			 */
 			deleteRow:function (i, skipCalc) {
 				i = i || jS.rowLast;
+				if (i < 1) return;
 				//remove tr's first
 				jS.getTd(jS.i, i, 1).parent().remove();
 
