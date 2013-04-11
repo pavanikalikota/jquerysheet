@@ -5578,6 +5578,8 @@ jQuery.sheet = {
 
 				if (!td.is(jS.cellLast.td)) {
 					jS.followMe(td);
+				} else {
+					jS.autoFillerGoToTd(td);
 				}
 
 				//Show where we are to the user
@@ -6693,6 +6695,13 @@ jQuery.sheet = {
 				return $(doc.createElement('div')).text(sheetTab).html();
 			},
 
+			/**
+			 * detects if a td is not visible
+			 * @param {jQuery|HTMLElement} td
+			 * @methodOf jS
+			 * @name tdNotVisible
+			 * @returns {Boolean|Object}
+			 */
 			tdNotVisible:function(td) {
 				var pane = jS.obj.pane(),
 					visibleFold = {
