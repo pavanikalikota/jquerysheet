@@ -4318,7 +4318,7 @@ jQuery.sheet = {
 						fullScreen = doc.createElement('div'),
 						events = $._data(s.parent[0], 'events');
 
-					fullScreen.className = jS.cl.fullScreen + ' ' + jS.cl.uiFullScreen;
+					fullScreen.className = jS.cl.fullScreen + ' ' + jS.cl.uiFullScreen + ' ' + jS.cl.parent;
 
 					fullScreen.origParent = parent;
 					s.parent = jS.controls.fullScreen = $(fullScreen)
@@ -9728,22 +9728,27 @@ var arrHelpers = {
 		});
 		return arr;
 	},
-	closest:function (array, num, min) {
+	closest:function (array, num, min, max) {
 		array = array || [];
 		num = num || 0;
 		min = min || 0;
+		max = max || array.length - 1;
 
-		var arr = array.slice(min);
+		var target;
 
-		while (arr.length > 1) {
-			var halfWayPoint = this.math.round(arr.length / 2);
-			if (num < arr[halfWayPoint]) {
-				arr.splice(halfWayPoint, halfWayPoint + 1);
+		while (true) {
+			target = ((min + max) >> 1);
+			if (target === max || target === min) {
+				return array[target];
+			}
+			if (array[target] > num) {
+				max = target;
+			} else if (array[target] < num) {
+				min = target;
 			} else {
-				arr.splice(0, halfWayPoint);
+				return array[target];
 			}
 		}
-		return arr[0];
 	}
 };
 
