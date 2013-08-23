@@ -7344,9 +7344,9 @@ jQuery.sheet = {
 	                            size = jS.tableSize(tables[i]);
 		                        if (size.rows > $.sheet.max || size.cols > $.sheet.max) {
 			                        jS.trigger('sheetMaxSize', [tables[i], i]);
-			                        if (!confirm(jS.msg.maxSizeBrowserLimitationOnOpen)) {
-				                        continue;
-			                        }
+			                        //if (!confirm(jS.msg.maxSizeBrowserLimitationOnOpen)) {
+				                    //    continue;
+			                        //}
 		                        }
 	                        }
                             jS.controlFactory.sheetUI(ui, tables[i], i);
